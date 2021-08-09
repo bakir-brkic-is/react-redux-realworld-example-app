@@ -13,17 +13,17 @@ pipeline {
                 sh 'docker build . -t reduxapp'
             }
         }
-        stage('Deploy') {
+        stage('Docker run container') {
             steps {
-                echo 'polahko doci ce na red'
+                sh 'docker run -d -p 8080:4100 --name redux-app reduxapp'
             }
         }
     }
     
     post {
-        // always {
-        //     archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
-        // }
+        always {
+            archiveArtifacts artifacts: 'build', fingerprint: true
+        }
         success {
             echo 'Success!'
         }
