@@ -10,7 +10,8 @@ pipeline {
     stages {
         stage('Build container image') {
             steps {
-                sh 'docker build . -t reduxapp'
+                // sh 'docker build . -t reduxapp'
+                def customImage = docker.build("reduxapp:${env.BUILD_ID}")
             }
         }
         stage('Docker run container') {
