@@ -4,13 +4,18 @@ pipeline {
             image 'brrx387/jenkins-docker'
             args '-v /var/run/docker.sock:/var/run/docker.sock'
             reuseNode true
-        } 
+        }
+    }
+
+    environment {
+        API_ROOT = 'sjedimnako.ba'
     }
     
     stages {
         stage('Build container image') {
             steps {
-                sh "docker build . -t reduxapp:${env.BUILD_ID}"
+                echo "API_ROOT=${API_ROOT}"
+                sh "docker build -t reduxapp:${env.BUILD_ID} --build-arg API_ROOT=${API_ROOT} ."
             }
         }
         stage('Docker run container') {
