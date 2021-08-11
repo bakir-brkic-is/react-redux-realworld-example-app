@@ -20,6 +20,7 @@ pipeline {
         }
         stage('Docker run container') {
             steps {
+                sh "docker rm -f redux-app-${((env.BUILD_ID - 1))}"
                 sh "docker run -d -p 8080:80 --name redux-app-${env.BUILD_ID} reduxapp:${env.BUILD_ID}"
             }
         }
