@@ -8,7 +8,7 @@ pipeline {
     }
 
     environment {
-        API_ROOT = 'https://conduit.productionready.io/api'
+        API_ROOT = 'http://localhost:3000/api'
     }
     
     stages {
