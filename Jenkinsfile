@@ -1,29 +1,37 @@
 pipeline {
-    agent { 
-        docker { 
-            image 'brrx387/jenkins-docker'
-            args '-v /var/run/docker.sock:/var/run/docker.sock'
-            reuseNode true
-        }
-    }
+    agent none
 
     environment {
-        API_ROOT = 'http://localhost:3000/api'
+        API_ROOT_STAGING = 'http://localhost:3000/api'
+        API_ROOT_PRODUCTION = 'http://localhost:2000/api'
     }
     
     stages {
-        stage('Build container image') {
+        stage('Build for staging and production'){
+            agent { 
+                docker { 
+                    image 'node:lts'
+                    // args '-v /var/run/docker.sock:/var/run/docker.sock'
+                }
+            }
             steps {
-                echo "API_ROOT=${API_ROOT}"
-                sh "docker build -t reduxapp:${env.BUILD_ID} --build-arg API_ROOT=${API_ROOT} ."
+                // shell script that runs npm install and builds for staging and production, 
+                // executed inside node:lts container
+                sh 'chmod +x jenkins-scripts/build.sh'
+                sh './jenkins-scripts/build.sh'
             }
         }
-        stage('Docker run container') {
-            steps {
-                sh "docker rm -f redux-app"
-                sh "docker run -d -p 8080:80 --name redux-app reduxapp:${env.BUILD_ID}"
-            }
-        }
+        // stage('Package into docker images') {
+        //     steps {
+        //         sh "docker build -t reduxapp:${env.BUILD_ID} ."
+        //     }
+        // }
+        // stage('Docker run container') {
+        //     steps {
+        //         sh "docker rm -f redux-app"
+        //         sh "docker run -d -p 8080:80 --name redux-app -e EXPRESS_BACKEND_SERVICE_SERVICE_PORT=${BACKEND_PORT} -e EXPRESS_BACKEND_SERVICE_SERVICE_HOST=${BACKEND_HOST} reduxapp:${env.BUILD_ID}"
+        //     }
+        // }
     }
     
     post {
