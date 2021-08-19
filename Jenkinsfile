@@ -75,7 +75,8 @@ pipeline {
                 // environment being selected using environment variable during container start
                 // sh "docker build -t brrx387/react-redux-realworld-example-app:${env.BUILD_ID} ."
                 echo 'this stage would create Docker image based on Nginx alpine baseimage'
-                sh 'printenv'
+                // sh '''IFS='/' read -r -a BRANCH_NAME <<< "$GIT_BRANCH"'''
+                sh "docker build -t reduxapp:${env.BUILD_ID}-staging --build-arg JOB=${env.JOB_BASE_NAME} --build-arg BRANCH=master --build-arg NUM=${env.BUILD_ID} ."
             }
         }
     }
