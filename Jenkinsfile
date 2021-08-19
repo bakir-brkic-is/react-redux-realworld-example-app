@@ -1,5 +1,9 @@
 pipeline {
-    agent none
+    agent { 
+        docker { 
+            image 'node:lts'
+        }
+    }
 
     environment {
         API_ROOT_STAGING = 'http://localhost:3000/api'
@@ -8,14 +12,9 @@ pipeline {
     
     stages {
         stage('Build for staging and production'){
-            agent { 
-                docker { 
-                    image 'node:lts'
-                    // args '-v /var/run/docker.sock:/var/run/docker.sock'
-                }
-            }
             steps {
-                // shell script that runs npm install and builds for staging and production, 
+                // shell script that runs npm install 
+                // and builds for staging and production, 
                 // executed inside node:lts container
                 sh 'chmod +x jenkins-scripts/build.sh'
                 sh './jenkins-scripts/build.sh'
