@@ -11,17 +11,19 @@ pipeline {
     }
 
     stages {
-        stage('Get version') {
-            // input {
-            //     message "Should we continue?"
-            //     submitter "ado"
-            //     parameters {
-            //         string(name: 'VERSION', defaultValue: '75', description: 'Which version should be fetched?')
-            //     }
-            // }
+        stage('AWS configure') {
+            steps {
+                sh "aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID}"
+                sh "aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}"
+                sh 'aws configure set default.region us-east-1'
+            }
+        }
+        stage('Fetch artifact .tar.gz from artifact s3 bucket') {
             steps {
                 echo "reduxapp-master-build-${params.VERSION}.tar.gz, is selected to be fetched from s3."
-                sh 'printenv'
+                sh "aws s3 cp s3://bakirbs-combined-task-front-artifact-bucket/reduxapp-master-build-${params.VERSION}.tar.gz reduxapp-build-artifact.tar.gz"
+                sh "tar -xzvf reduxapp-build-artifact.tar.gz"
+                sh "ls"
             }
         }
         stage('Fetch from artifact bucket') {
