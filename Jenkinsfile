@@ -72,6 +72,11 @@ pipeline {
                 sh "aws s3 cp ${JOB_BASE_NAME}-master-build-${BUILD_ID}/build-${BUILD_ID}-staging s3://bakirbs-combined-task-front-artifact-bucket/build-${BUILD_ID}-staging/ --recursive"
             }
         }
+        stage ('Run Jenkinsfile-production job to push the production build to application bucket') {
+            steps {
+                build job: '../reduxapp-prod'
+            }
+        }
         stage('Package into docker image') {
             agent { 
                 docker { 
