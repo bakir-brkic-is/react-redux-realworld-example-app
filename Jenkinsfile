@@ -69,7 +69,7 @@ pipeline {
                 sh "aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}"
                 sh 'aws configure set default.region us-east-1'
 
-                sh "aws s3 cp ${JOB_BASE_NAME}-master-build-${BUILD_ID}/build-${BUILD_ID}-staging s3://bakirbs-combined-task-front-artifact-bucket/build-${BUILD_ID}-staging/ --recursive"
+                sh "aws s3 cp ${JOB_BASE_NAME}-master-build-${BUILD_ID}/build-${BUILD_ID}-staging s3://bakirbs-combined-task-front-staging-bucket/build-${BUILD_ID}-staging/ --recursive"
             }
         }
         stage ('Run Jenkinsfile-production job to push the production build to application bucket') {
