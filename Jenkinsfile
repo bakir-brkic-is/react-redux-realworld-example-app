@@ -4,6 +4,9 @@ pipeline {
     environment {
         API_ROOT_STAGING = 'http://localhost:3000/api'
         API_ROOT_PRODUCTION = 'http://localhost:2000/api'
+
+        AWS_ACCESS_KEY_ID = credentials('jenkins-aws-secret-key-id')
+        AWS_SECRET_ACCESS_KEY = credentials('jenkins-aws-secret-access-key')
     }
     
     stages {
@@ -40,13 +43,18 @@ pipeline {
         stage('Upload the resulting archives to artifact S3 bucket'){
             agent { 
                 docker { 
-                    image 'node:lts'
+                    image 'jenkins-with-aws-cli'
                     reuseNode true
                 }
             }
             steps {
-                // executed inside node:lts container
+                // executed inside jenkins-with-aws-cli container
+                // this image is provided by Amazon, just pass the crdentials and use aws-cli
                 echo 'this stage uploads tar.gz to S3 bucket for artefacts'
+                sh "aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID}"
+                sh "aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}"
+                sh 'aws configure set default.region us-east-1'
+                sh 'aws s3 ls'
             }
         }
         stage('Deploy the application from staging directory to application S3 bucket'){
