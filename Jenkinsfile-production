@@ -26,9 +26,15 @@ pipeline {
                 sh "ls"
             }
         }
-        stage('Fetch from artifact bucket') {
+        stage('Clear bucket and deploy new version') {
             steps {
-                echo 'fetch'
+                echo 'delete all old files'
+                sh 'aws s3 rm s3://bakirbs-combined-task-front-application-bucket --recursive'
+                echo 'upload new version'
+                sh "aws s3 cp reduxapp-master-build-${params.VERSION}/build-${params.VERSION}-production/ s3://bakirbs-combined-task-front-application-bucket --recursive"
+
+                sh "rm -rf reduxapp-master-build-${params.VERSION}"
+                sh 'rm reduxapp-build-artifact.tar.gz'
             }
         }
     }
