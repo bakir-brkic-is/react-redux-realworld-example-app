@@ -12,15 +12,16 @@ pipeline {
 
     stages {
         stage('Get version') {
-            input {
-                message "Should we continue?"
-                submitter "ado"
-                parameters {
-                    string(name: 'VERSION', defaultValue: '75', description: 'Which version should be fetched?')
-                }
-            }
+            // input {
+            //     message "Should we continue?"
+            //     submitter "ado"
+            //     parameters {
+            //         string(name: 'VERSION', defaultValue: '75', description: 'Which version should be fetched?')
+            //     }
+            // }
             steps {
-                echo "reduxapp-master-build-${VERSION}.tar.gz, is selected to be fetched from s3."
+                echo "reduxapp-master-build-${params.VERSION}.tar.gz, is selected to be fetched from s3."
+                sh 'printenv'
             }
         }
         stage('Fetch from artifact bucket') {

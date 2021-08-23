@@ -75,7 +75,7 @@ pipeline {
         stage ('Run Jenkinsfile-production job to push the production build to application bucket') {
             agent any
             steps {
-                build 'reduxapp-prod'
+                build (job: 'reduxapp-prod', parameters: [string(name: 'VERSION', value: "${BUILD_ID}")])
             }
         }
         stage('Package into docker image') {
