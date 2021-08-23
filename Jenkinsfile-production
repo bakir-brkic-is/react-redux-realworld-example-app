@@ -1,0 +1,32 @@
+pipeline {
+    agent {
+        docker{
+            image 'jenkins-with-aws-cli'
+        }
+    }
+
+    environment {
+        AWS_ACCESS_KEY_ID = credentials('jenkins-aws-secret-key-id')
+        AWS_SECRET_ACCESS_KEY = credentials('jenkins-aws-secret-access-key')
+    }
+
+    stages {
+        stage('Get version') {
+            input {
+                message "Should we continue?"
+                submitter "ado"
+                parameters {
+                    string(name: 'VERSION', defaultValue: '75', description: 'Which version should be fetched?')
+                }
+            }
+            steps {
+                echo "reduxapp-master-build-${VERSION}.tar.gz, is selected to be fetched from s3."
+            }
+        }
+        stage('Fetch from artifact bucket') {
+            steps {
+
+            }
+        }
+    }
+}

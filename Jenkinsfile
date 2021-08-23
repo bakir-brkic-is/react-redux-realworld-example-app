@@ -14,7 +14,6 @@ pipeline {
             agent { 
                 docker { 
                     image 'node:lts'
-                    reuseNode true
                 }
             }
             steps {
@@ -29,7 +28,6 @@ pipeline {
             agent { 
                 docker { 
                     image 'node:lts'
-                    reuseNode true
                 }
             }
             steps {
@@ -44,30 +42,34 @@ pipeline {
             agent { 
                 docker { 
                     image 'jenkins-with-aws-cli'
-                    reuseNode true
                 }
             }
             steps {
                 // executed inside jenkins-with-aws-cli container
-                // this image is provided by Amazon, just pass the crdentials and use aws-cli
                 echo 'this stage uploads tar.gz to S3 bucket for artefacts'
+                
                 sh "aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID}"
                 sh "aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}"
                 sh 'aws configure set default.region us-east-1'
-                sh 'aws s3 ls'
+
+                sh "aws s3 cp ${JOB_BASE_NAME}-master-build-${BUILD_ID}.tar.gz s3://bakirbs-combined-task-front-artifact-bucket/${JOB_BASE_NAME}-master-build-${BUILD_ID}.tar.gz"
             }
         }
         stage('Deploy the application from staging directory to application S3 bucket'){
             agent { 
                 docker { 
-                    image 'node:lts'
-                    reuseNode true
+                    image 'jenkins-with-aws-cli'
                 }
             }
             steps {
-                // executed inside node:lts container
+                // executed inside jenkins-with-aws-cli container
                 echo 'this stage uploads staging build to application S3 bucket'
-                sh 'printenv'
+
+                sh "aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID}"
+                sh "aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}"
+                sh 'aws configure set default.region us-east-1'
+
+                sh "aws s3 cp ${JOB_BASE_NAME}-master-build-${BUILD_ID}/build-${BUILD_ID}-staging s3://bakirbs-combined-task-front-artifact-bucket/build-${BUILD_ID}-staging/ --recursive"
             }
         }
         stage('Package into docker image') {
