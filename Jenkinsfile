@@ -2,7 +2,8 @@ pipeline {
     agent none
 
     environment {
-        API_ROOT_STAGING = 'http://localhost:3000/api'
+        // API_ROOT_STAGING = 'http://localhost:3000/api'
+        API_ROOT_STAGING = 'http://staging.backend.ba:3000/api'
         API_ROOT_PRODUCTION = 'http://localhost:2000/api'
 
         AWS_ACCESS_KEY_ID = credentials('jenkins-aws-secret-key-id')
@@ -55,7 +56,7 @@ pipeline {
                 sh "aws s3 cp ${JOB_BASE_NAME}-master-build-${BUILD_ID}.tar.gz s3://bakirbs-combined-task-front-artifact-bucket/${JOB_BASE_NAME}-master-build-${BUILD_ID}.tar.gz"
             }
         }
-        stage('Deploy the application from staging directory to application S3 bucket'){
+        stage('Deploy the application from staging directory to staging S3 bucket'){
             agent { 
                 docker { 
                     image 'jenkins-with-aws-cli'
@@ -69,7 +70,10 @@ pipeline {
                 sh "aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}"
                 sh 'aws configure set default.region us-east-1'
 
-                sh "aws s3 cp ${JOB_BASE_NAME}-master-build-${BUILD_ID}/build-${BUILD_ID}-staging s3://bakirbs-combined-task-front-staging-bucket/build-${BUILD_ID}-staging/ --recursive"
+                // delete old staging files
+                sh 'aws s3 rm s3://bakirbs-combined-task-front-staging-bucket --recursive'
+                // push staging build to bucket
+                sh "aws s3 cp ${JOB_BASE_NAME}-master-build-${BUILD_ID}/build-${BUILD_ID}-staging s3://bakirbs-combined-task-front-staging-bucket/ --recursive"
             }
         }
         stage ('Run Jenkinsfile-production job to push the production build to application bucket') {
@@ -93,7 +97,10 @@ pipeline {
                 echo 'this stage would create Docker image based on Nginx alpine baseimage'
                 // sh '''IFS='/' read -r -a BRANCH_NAME <<< "$GIT_BRANCH"'''
                 sh "docker build -t reduxapp:${env.BUILD_ID}-staging --build-arg JOB=${env.JOB_BASE_NAME} --build-arg BRANCH=master --build-arg NUM=${env.BUILD_ID} ."
-            }
+                
+                // delete local build dirs and archives
+                sh "rm -rf ${JOB_BASE_NAME}-master-build-${BUILD_ID}"
+                sh "rm ${JOB_BASE_NAME}-master-build-${BUILD_ID}.tar.gz"            }
         }
     }
     
