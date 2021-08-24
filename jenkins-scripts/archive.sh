@@ -11,6 +11,3 @@ mv "build-${BUILD_ID}-production" "${JOB_BASE_NAME}-${BRANCH_NAME[1]}-build-${BU
 
 # compress the build directory
 tar -czvf "${JOB_BASE_NAME}-${BRANCH_NAME[1]}-build-${BUILD_ID}.tar.gz" "${JOB_BASE_NAME}-${BRANCH_NAME[1]}-build-${BUILD_ID}" 
-
-# remove uncompressed production dir
-rm -rf "${JOB_BASE_NAME}-${BRANCH_NAME[1]}-build-${BUILD_ID}/build-${BUILD_ID}-production"

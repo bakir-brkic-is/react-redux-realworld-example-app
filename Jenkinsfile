@@ -96,11 +96,12 @@ pipeline {
                 // sh "docker build -t brrx387/react-redux-realworld-example-app:${env.BUILD_ID} ."
                 echo 'this stage would create Docker image based on Nginx alpine baseimage'
                 // sh '''IFS='/' read -r -a BRANCH_NAME <<< "$GIT_BRANCH"'''
-                sh "docker build -t reduxapp:${env.BUILD_ID}-staging --build-arg JOB=${env.JOB_BASE_NAME} --build-arg BRANCH=master --build-arg NUM=${env.BUILD_ID} ."
+                sh "docker build -t reduxapp:${env.BUILD_ID} --build-arg JOB=${env.JOB_BASE_NAME} --build-arg BRANCH=master --build-arg NUM=${env.BUILD_ID} ."
                 
                 // delete local build dirs and archives
                 sh "rm -rf ${JOB_BASE_NAME}-master-build-${BUILD_ID}"
-                sh "rm ${JOB_BASE_NAME}-master-build-${BUILD_ID}.tar.gz"            }
+                sh "rm ${JOB_BASE_NAME}-master-build-${BUILD_ID}.tar.gz"            
+            }
         }
     }
     
