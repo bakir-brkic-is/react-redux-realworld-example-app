@@ -2,9 +2,8 @@ pipeline {
     agent none
 
     environment {
-        // API_ROOT_STAGING = 'http://localhost:3000/api'
-        API_ROOT_STAGING = 'http://staging.backend.ba:3000/api'
-        API_ROOT_PRODUCTION = 'http://localhost:2000/api'
+        API_ROOT_STAGING = 'http://localhost:3000/api'
+        API_ROOT_PRODUCTION = 'http://a822df8e23c084daf8a57a16b5cb7602-904349378.us-east-1.elb.amazonaws.com:2000/api'
 
         AWS_ACCESS_KEY_ID = credentials('jenkins-aws-secret-key-id')
         AWS_SECRET_ACCESS_KEY = credentials('jenkins-aws-secret-access-key')
